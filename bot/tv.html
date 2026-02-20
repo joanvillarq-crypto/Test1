@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Show Details</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .season {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>TV Show Details</h1>
+    <div id="tv-show-details"></div>
+
+    <script>
+        const apiKey = 'cbcdfc6593aae506b023e64d7df48dc7'; // Replace with your TMDB API key
+        const urlParams = new URLSearchParams(window.location.search);
+        const tvShowId = urlParams.get('id');
+
+        async function fetchTVShowDetails() {
+            try {
+                const seasonsResponse = await fetch(`https://api.themoviedb.org/3/tv/${tvShowId}?api_key=${apiKey}&language=en-US`);
+                const seasonsData = await seasonsResponse.json();
+
+                const seasonsContainer = document.getElementById('tv-show-details');
+                seasonsContainer.innerHTML = `<h2>${seasonsData.name}</h2>`;
+
+                for (let season of seasonsData.seasons) {
+                    const episodesResponse = await fetch(`https://api.themoviedb.org/3/tv/${tvShowId}/season/${season.season_number}?api_key=${apiKey}&language=en-US`);
+                    const episodesData = await episodesResponse.json();
+
+                    const seasonDiv = document.createElement('div');
+                    seasonDiv.className = 'season';
+                    seasonDiv.innerHTML = `<h3>Season ${season.season_number}: ${season.name}</h3>`;
+
+                    const episodeList = document.createElement('ul');
+                    for (let episode of episodesData.episodes) {
+                        const episodeItem = document.createElement('li');
+                        episodeItem.textContent = `${episode.episode_number}: ${episode.name}`;
+                        episodeList.appendChild(episodeItem);
+                    }
+
+                    seasonDiv.appendChild(episodeList);
+                    seasonsContainer.appendChild(seasonDiv);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchTVShowDetails();
+    </script>
+</body>
+</html>

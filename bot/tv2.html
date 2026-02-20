@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Show Details</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .season {
+            margin-bottom: 20px;
+        }
+        .episode {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .episode img {
+            width: 50px; /* Set a fixed width for episode posters */
+            height: auto; /* Maintain aspect ratio */
+            margin-right: 10px; /* Space between image and text */
+        }
+        .no-image {
+            width: 50px; /* Set a fixed width for the no image placeholder */
+            height: auto; /* Maintain aspect ratio */
+            margin-right: 10px; /* Space between image and text */
+        }
+    </style>
+</head>
+<body>
+    <h1>TV Show Details</h1>
+    <div id="tv-show-details"></div>
+
+    <script>
+        const apiKey = 'cbcdfc6593aae506b023e64d7df48dc7'; // Replace with your TMDB API key
+        const urlParams = new URLSearchParams(window.location.search);
+        const tvShowId = urlParams.get('id');
+        const imageBaseUrl = 'https://image.tmdb.org/t/p/w500'; // Base URL for images
+        const noImageUrl = 'https://example.com/noImage.png'; // Replace with your "no image" placeholder URL
+
+        async function fetchTVShowDetails() {
+            try {
+                const seasonsResponse = await fetch(`https://api.themoviedb.org/3/tv/${tvShowId}?api_key=${apiKey}&language=en-US`);
+                const seasonsData = await seasonsResponse.json();
+
+                const seasonsContainer = document.getElementById('tv-show-details');
+                seasonsContainer.innerHTML = `<h2>${seasonsData.name}</h2>`;
+
+                for (let season of seasonsData.seasons) {
+                    // Fetch episodes for each season
+                    const episodesResponse = await fetch(`https://api.themoviedb.org/3/tv/${tvShowId}/season/${season.season_number}?api_key=${apiKey}&language=en-US`);
+                    const episodesData = await episodesResponse.json();
+
+                    const seasonDiv = document.createElement('div');
+                    seasonDiv.className = 'season';
+                    seasonDiv.innerHTML = `<h3>Season ${season.season_number}: ${season.name}</h3>`;
+
+                    const episodeList = document.createElement('ul');
+                    for (let episode of episodesData.episodes) {
+                        const episodeItem = document.createElement('li');
+                        episodeItem.className = 'episode';
+
+                        // Create an image element for the episode poster
+                        const episodeImage = document.createElement('img');
+                        if (episode.still_path) {
+                            episodeImage.src = `${imageBaseUrl}${episode.still_path}`;
+                        } else {
+                            // Use the no image placeholder if no image is available
+                            const noImage = document.createElement('img');
+                            noImage.src = noImageUrl; // URL for "no image" placeholder
+                            noImage.className = 'no-image';
+                            episodeItem.appendChild(noImage);
+                        }
+
+                        // Create a text node for the episode title
+                        const episodeText = document.createTextNode(`${episode.episode_number}: ${episode.name}`);
+
+                        // Append image and text to the episode item
+                        if (episode.still_path) {
+                            episodeItem.appendChild(episodeImage);
+                        }
+                        episodeItem.appendChild(episodeText);
+                        episodeList.appendChild(episodeItem);
+                    }
+
+                    seasonDiv.appendChild(episodeList);
+                    seasonsContainer.appendChild(seasonDiv);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Fetch TV show details on page load
+        fetchTVShowDetails();
+    </script>
+</body>
+</html>

@@ -53,11 +53,11 @@ const Castfun = (castee) => {
 
 const Trailerfunc = function (id) {
   return `<aside name="san@dbox" id="video-player">
-<iframe name="fra@mez" id="YouTube-Iframe" class="youtubePlayer lazyload" src="https://freembed.site/embed/movie/?id=${id}" width="100%" height="100%" loading="lazy" frameborder="0" allowfullscreen></iframe>
+<iframe name="fra@mez" id="YouTube-Iframe" class="youtubePlayer lazyload" src="https://player.vidzee.wtf/embed/movie/${id}" width="100%" height="100%" loading="lazy" frameborder="0" allowfullscreen></iframe>
 
 <div id="video-caption">Default Server - No Ads</div>
 <div id="playlist">
-<button class="lazyload active button" data-bg="" data-iframe="https://player.vidzee.wtf/embed/movie/?id=${id}" data-caption="Default Server - No Ads">Default Server - No Ads</button>
+<button class="lazyload active button" data-bg="" data-iframe="https://player.vidzee.wtf/embed/movie/${id}" data-caption="Default Server - No Ads">Default Server - No Ads</button>
 
 <button class="lazyload active button" data-bg="" data-iframe="https://freembed.site/embed/hindi/?id=${id}" data-caption="Hindi - No Ads">Hindi - No Ads</button>
 
@@ -392,6 +392,7 @@ const generateSEOTags = (title, description, keywords, property) => {
    <meta property="og:image" content="https://image.tmdb.org/t/p/w500/${moviee.poster_path}"/>
   `;
 };
+
 
 generateSEOTags(title, description, keywords, property);
 
